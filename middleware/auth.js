@@ -1,7 +1,8 @@
+// middleware/auth.js
 const jwt = require('jsonwebtoken');
 const { StatusCodes } = require('http-status-codes');
 const { handleResponse } = require('../utils/responseHandler');
-const User = require('../models/User');
+const { User } = require('../models');
 
 const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -14,10 +15,11 @@ const authMiddleware = async (req, res, next) => {
   try {
     // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
+    console.log('User Model:', User); 
+    
     // Fetch the user from the database using the id in the decoded token
-    const user = await User.findByPk(decoded.user.id, {
-      attributes: { exclude: ['password'] } // Exclude the password from being attached to req.user
+    const user = await User.findByPk(decoded.id, {
+      attributes: { exclude: ['password'] }
     });
 
     if (!user) {
@@ -29,8 +31,9 @@ const authMiddleware = async (req, res, next) => {
 
     next();
   } catch (err) {
+    console.error("Error in auth middleware:", err); // Log the error for debugging
     return handleResponse(res, StatusCodes.FORBIDDEN, { message: 'Invalid token' });
   }
 };
 
-module.exports = { authMiddleware };
+module.exports = authMiddleware;

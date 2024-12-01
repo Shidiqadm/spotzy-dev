@@ -1,25 +1,21 @@
+// models/vehicleType.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../seq');
 
-const ParkingSpot = sequelize.define('ParkingSpot', {
+const VehicleType = sequelize.define('VehicleType', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     allowNull: false,
     primaryKey: true,
   },
-  spotNumber: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
-  },
-  status: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    defaultValue: 'available',
   },
 }, {
-  tableName: 'parking_spots',
+  tableName: 'vehicle_types',
   timestamps: true,
 });
 
-module.exports = ParkingSpot;
+module.exports = VehicleType;

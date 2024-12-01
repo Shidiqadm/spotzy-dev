@@ -1,10 +1,10 @@
 // controllers/AuthController.js
-const { User } = require('../models');
 const jwt = require('jsonwebtoken');
 const { StatusCodes } = require('http-status-codes');
 const { handleResponse } = require('../utils/responseHandler');
+const User = require('../models/user');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Register a new user
 exports.register = async (req, res) => {
@@ -49,17 +49,19 @@ exports.login = async (req, res) => {
     // Check if user exists
     let user = await User.findOne({ where: { email } });
     if (!user) {
+      console.log('User not found');
       return handleResponse(res, StatusCodes.UNAUTHORIZED, { error: 'Invalid email or password' });
     }
 
     // Validate password
     const isMatch = await user.isValidPassword(password);
     if (!isMatch) {
+      console.log('Invalid password');
       return handleResponse(res, StatusCodes.UNAUTHORIZED, { error: 'Invalid email or password' });
     }
 
     // Generate token
-    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '2 days' });
 
     return handleResponse(res, StatusCodes.OK, {
       message: 'Login successful',
